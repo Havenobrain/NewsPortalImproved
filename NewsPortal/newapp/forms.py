@@ -1,6 +1,6 @@
 
 from django import forms
-from .models import Post
+from .models import Post, User
 class NewsForm(forms.ModelForm):
    class Meta:
        model = Post
@@ -20,4 +20,15 @@ class ArticleForm(forms.ModelForm):
             'postCategory',
             'title',
             'text',
+        ]
+
+class ProfileUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = [
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'password',
         ]
