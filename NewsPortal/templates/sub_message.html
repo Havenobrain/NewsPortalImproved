@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+  <h1>News Portal подписка</h1>
+
+  <p>В категорию, на которую вы подписаны, добавлен новый пост {{post.title}}
+      <strong>{{ post.text|truncatewords:50 }} </strong>
+    <strong> </strong>
+  </p>
+  <p> Link to post: <a href="http://127.0.0.1:8000/news/{{post.id}}" class="btn btn-outline-success">ссылка</a><br> </p>
+
+</body>

@@ -8,4 +8,19 @@ Post
 <h1>{{ post.title }}</h1>
 <h1>{{ post.dateCreation|date:'d M Y' }}</h1>
 <h1>{{ post.text|censor }}</h1>
-{% endblock content %}
+
+
+
+{% if not is_subscribe %}
+<b>Вы можете подписаться на данную категорию</b>
+    {% for category in post.postCategory.all %}
+        <a class="btn" href="add_subscribe/{{ category.id }}"><button type="submit" value="follow" name="pk" class="btn btn-light btn-outline-danger">{{category}}</button></a>
+    {% endfor %}
+{% else %}
+<b>Вы можете отписаться от данной категории</b>
+    {% for category in post.postCategory.all %}
+        <a class="btn" href="delete_subscribe/{{ category.id }}"><button type="submit" value="follow" name="pk" class="btn btn-light btn-outline-danger">{{category}}</button></a>
+    {% endfor %}
+{% endif %}
+
+{% endblock content %}}

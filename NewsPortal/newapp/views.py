@@ -1,10 +1,17 @@
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import (ListView, DetailView, CreateView, UpdateView, DeleteView)
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Post, User
+from django.contrib.auth.decorators import login_required
+from .models import Post, User, Category
 from .filters import PostFilter
 from .forms import NewsForm, ArticleForm, ProfileUserForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.conf import settings
+from datetime import timedelta
+from datetime import datetime
+
+
 
 
 class NewsList(ListView):
@@ -20,6 +27,27 @@ class NewsDetail(DetailView):
     template_name = 'post.html'
     context_object_name = 'post'
     pk_url_kwarg = 'id'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        for category in self.get_object().postCategory.all():
+            context['is_subscribe'] = self.request.user.category_set.filter(pk=category.pk).exists()
+        return context
+
+#подписка на группу
+@login_required
+def add_subscribe(request, **kwargs):
+    category_number = int(kwargs['pk'])
+    Category.objects.get(pk=category_number).subscribers.add(request.user)
+    return redirect('/news/')
+
+#отписка на группу
+@login_required
+def delete_subscribe(request, **kwargs):
+    category_number = int(kwargs['pk'])
+    Category.objects.get(pk=category_number).subscribers.remove(request.user)
+    return redirect('/news/')
+
 
 
 class NewsSearchList(NewsList):
@@ -49,6 +77,21 @@ class NewsCreate(CreateView, PermissionRequiredMixin):
         post.categoryType = 'NW'
         return super().form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        limit = settings.DAILY_POST_LIMIT
+        context['limit'] = limit
+        last_day = datetime.utcnow() - timedelta(days=1)
+        posts_day_count = Post.objects.filter(
+            author__authorUser=self.request.user,
+            dateCreation__gte=last_day,
+        ).count()
+        context['count'] = posts_day_count
+        context['post_limit'] = posts_day_count < limit
+        print(last_day)
+        print(posts_day_count)
+        print(self.request.user, datetime.utcnow())
+        return context
 
 class NewsEdit(UpdateView, PermissionRequiredMixin):
     form_class = NewsForm
