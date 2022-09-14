@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.views.generic import (ListView, DetailView, CreateView, UpdateView, DeleteView)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from .models import Post, User, Category
+from .models import Post, User, Category, Author
 from .filters import PostFilter
 from .forms import NewsForm, ArticleForm, ProfileUserForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -73,9 +73,11 @@ class NewsCreate(CreateView, PermissionRequiredMixin):
     permission_required = ('news.add_post')
 
     def form_valid(self, form):
-        post = form.save(commit=False)
-        post.categoryType = 'NW'
+        self.object = form.save(commit=False)
+        self.object.categoryType = 'NW'
+        self.object.postAuthor = Author.objects.get(authorUser=self.request.user)
         return super().form_valid(form)
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -88,10 +90,10 @@ class NewsCreate(CreateView, PermissionRequiredMixin):
         ).count()
         context['count'] = posts_day_count
         context['post_limit'] = posts_day_count < limit
-        print(last_day)
-        print(posts_day_count)
-        print(self.request.user, datetime.utcnow())
+
         return context
+
+
 
 class NewsEdit(UpdateView, PermissionRequiredMixin):
     form_class = NewsForm
@@ -138,3 +140,8 @@ class ProfileUserEdit(LoginRequiredMixin, UpdateView):
     success_url = '/'
 
 
+ #   def form_valid(self, form):
+      #  post = form.save(commit=False)
+     #   post.categoryType = 'NW'
+      #  self.object.postAuthor = Author.objects.get(authorUser=self.request.user)
+     #   return super().form_valid(form)
