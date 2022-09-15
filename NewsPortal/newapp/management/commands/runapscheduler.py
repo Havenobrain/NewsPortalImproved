@@ -33,7 +33,7 @@ class Command(BaseCommand):
         # добавляем работу нашему задачнику
         scheduler.add_job(
             my_job,
-            trigger=CronTrigger(second="*/1"),
+            trigger=CronTrigger(second="*/10"),
             # То же, что и интервал, но задача тригера таким образом более понятна django
             id="my_job",  # уникальный айди
             max_instances=1,
@@ -46,7 +46,7 @@ class Command(BaseCommand):
             trigger=CronTrigger(
                 day_of_week="mon", hour="00", minute="00"
             ),
-            # Каждую неделю будут удаляться старые задачи, которые либо не удалось выполнить, либо уже выполнять не надо.
+            # Каждую неделю будут удаляться старые задачи, которые либо не удалось выполнить, либо уже выполнятьненадо
             id="delete_old_job_executions",
             max_instances=1,
             replace_existing=True,
