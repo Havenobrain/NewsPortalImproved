@@ -11,9 +11,7 @@ from django.conf import settings
 from datetime import timedelta
 from datetime import datetime
 from django.core.cache import cache
-
-
-
+import logging
 
 class NewsList(ListView):
     model = Post
@@ -148,9 +146,3 @@ class ProfileUserEdit(LoginRequiredMixin, UpdateView):
     template_name = 'profile_edit.html'
     success_url = '/'
 
-
- #   def form_valid(self, form):
-      #  post = form.save(commit=False)
-     #   post.categoryType = 'NW'
-      #  self.object.postAuthor = Author.objects.get(authorUser=self.request.user)
-     #   return super().form_valid(form)
